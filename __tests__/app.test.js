@@ -3,6 +3,7 @@ const app = require("../db/app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -43,7 +44,7 @@ describe("app/topics", () => {
           expect(body).toBeInstanceOf(Array);
         });
     });
-    test("200: returns an array of article objects where each object has all the correc t properties", () => {
+    test("200: returns an array of article objects where each object has all the correct properties", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -60,6 +61,14 @@ describe("app/topics", () => {
               comment_count: expect.any(String),
             });
           });
+        });
+    });
+    test("200: the array of objects are ordered by date created decending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("created_at", { descending: true });
         });
     });
   });
