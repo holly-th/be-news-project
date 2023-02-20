@@ -4,12 +4,11 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 
-afterAll(() => {
-  db.end();
-});
-
 beforeEach(() => {
   return seed(data);
+});
+afterAll(() => {
+  return db.end();
 });
 
 describe("app/topics", () => {
