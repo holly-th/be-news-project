@@ -18,7 +18,7 @@ describe("app/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeInstanceOf(Array);
+        expect(body.results).toBeInstanceOf(Array);
       });
   });
   test("200: the returning array is made up of objects and each one has a slug and description keys ", () => {
@@ -26,8 +26,9 @@ describe("app/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toHaveLength(3);
-        body.forEach((object) => {
+        const results = body.results;
+        expect(results).toHaveLength(3);
+        results.forEach((object) => {
           expect(object).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
@@ -41,7 +42,7 @@ describe("app/topics", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeInstanceOf(Array);
+          expect(body.results).toBeInstanceOf(Array);
         });
     });
     test("200: returns an array of article objects where each object has all the correct properties", () => {
@@ -49,7 +50,8 @@ describe("app/topics", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          body.forEach((article) => {
+          const articleArr = body.results;
+          articleArr.forEach((article) => {
             expect(article).toMatchObject({
               author: expect.any(String),
               title: expect.any(String),
@@ -68,7 +70,7 @@ describe("app/topics", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("created_at", { descending: true });
+          expect(body.results).toBeSortedBy("created_at", { descending: true });
         });
     });
   });
