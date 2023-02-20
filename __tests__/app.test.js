@@ -3,6 +3,7 @@ const app = require("../db/app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -17,8 +18,7 @@ describe("app/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        //  console.log(body);
-        expect(body).toBeInstanceOf(Array);
+        expect(body.results).toBeInstanceOf(Array);
       });
   });
   test("200: the returning array is made up of objects and each one has a slug and description keys ", () => {
@@ -26,13 +26,52 @@ describe("app/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        body.forEach((object) => {
+        const results = body.results;
+        expect(results).toHaveLength(3);
+        results.forEach((object) => {
           expect(object).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
           });
-          console.log(object);
         });
       });
+  });
+  describe("app/articles", () => {
+    test("200: returns an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.results).toBeInstanceOf(Array);
+        });
+    });
+    test("200: returns an array of article objects where each object has all the correct properties", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const articleArr = body.results;
+          articleArr.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    test("200: the array of objects are ordered by date created decending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.results).toBeSortedBy("created_at", { descending: true });
+        });
+    });
   });
 });
