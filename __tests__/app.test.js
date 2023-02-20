@@ -3,7 +3,6 @@ const app = require("../db/app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
-const { convertTimestampToDate } = require("../db/seeds/utils");
 
 beforeEach(() => {
   return seed(data);
