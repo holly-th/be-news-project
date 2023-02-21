@@ -7,7 +7,11 @@ const {
   postComment,
   getComments,
 } = require("../db/controllers/app.controller");
-const { Errors400s, serverError } = require("./error-handling");
+const {
+  handlePSQLErrors,
+  handleCustomErrors,
+  serverError,
+} = require("./error-handling");
 
 app.use(express.json());
 
@@ -20,6 +24,6 @@ app.get("/api/articles/:article_id", getArticleById);
 app.post("/api/articles/:article_id/comments", postComment);
 app.get("/api/articles/:article_id/comments", getComments);
 
-app.use(Errors400s, serverError);
+app.use(handlePSQLErrors, handleCustomErrors, serverError);
 
 module.exports = app;

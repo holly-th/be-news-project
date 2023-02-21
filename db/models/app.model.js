@@ -49,7 +49,7 @@ exports.fetchComments = (article_id) => {
     )
     .then((results) => {
       if (results.rowCount === 0) {
-        return Promise.reject("ID not");
+        return Promise.reject("ID not found");
       }
       return results.rows;
     });
