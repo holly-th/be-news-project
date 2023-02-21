@@ -38,6 +38,19 @@ exports.addComment = (comment, article_id) => {
     )
     .then((results) => {
       console.log(results.rows);
+    });
+};
+
+exports.fetchComments = (article_id) => {
+  return db
+    .query(
+      `SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
+      [article_id]
+    )
+    .then((results) => {
+      if (results.rowCount === 0) {
+        return Promise.reject("ID not");
+      }
       return results.rows;
     });
 };
