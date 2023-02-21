@@ -27,3 +27,17 @@ exports.fetchArticleById = (article_id) => {
       }
     });
 };
+
+exports.addComment = (comment, article_id) => {
+  const { username, body } = comment;
+  return db
+    .query(
+      `INSERT INTO comments (username, body, article_id) VALUES ($1, $2, $3) RETURNING *`[
+        (comment, article_id)
+      ]
+    )
+    .then((results) => {
+      console.log(results.rows);
+      return results.rows;
+    });
+};

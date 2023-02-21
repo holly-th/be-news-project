@@ -12,7 +12,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("app/topics", () => {
+describe("GET/api/topics", () => {
   test("200: returns an array of topic objects with slug and description properties", () => {
     return request(app)
       .get("/api/topics")
@@ -37,7 +37,7 @@ describe("app/topics", () => {
       });
   });
 });
-describe("app/articles", () => {
+describe("GET/api/articles", () => {
   test("200: returns an array of article objects", () => {
     return request(app)
       .get("/api/articles")
@@ -76,7 +76,7 @@ describe("app/articles", () => {
         expect(body.results).toBeSortedBy("created_at", { descending: true });
       });
   });
-  describe("/api/articles/:article_id", () => {
+  describe("GET/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {
       return request(app)
         .get("/api/articles/3")
@@ -101,6 +101,23 @@ describe("app/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad Request");
+        });
+    });
+  });
+  describe("POST/api/articles/:article_id/comments", () => {
+    test("200: returns the comment that was just posted to the correct article_id given", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge", body: "who is Mitch?" })
+        .set("Accept", "application/json")
+        .expect("Content-type", /json/)
+        .expect(201)
+        .then(({ body }) => {
+          console.log(body);
+          expect(body.comment).toEqual({
+            username: "butter_bridge",
+            body: "who is Mich",
+          });
         });
     });
   });
