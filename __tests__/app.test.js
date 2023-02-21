@@ -52,6 +52,8 @@ describe("app/topics", () => {
         .then(({ body }) => {
           const articleArr = body.results;
           articleArr.forEach((article) => {
+            const keys = Object.keys(article);
+            expect(keys).toHaveLength(9);
             expect(article).toMatchObject({
               author: expect.any(String),
               title: expect.any(String),
@@ -71,6 +73,18 @@ describe("app/topics", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.results).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+  });
+  describe("/api/articles/:article_id", () => {
+    test("200: returns an object with the correct article matching the id passed in", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then(({ body }) => {
+          const article = body.article[0];
+          expect(body.article).toHaveLength(1);
+          expect(article.article_id).toBe(3);
         });
     });
   });
