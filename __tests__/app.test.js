@@ -36,45 +36,45 @@ describe("app/topics", () => {
         });
       });
   });
-  describe("app/articles", () => {
-    test("200: returns an array of article objects", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.results).toBeInstanceOf(Array);
-        });
-    });
-    test("200: returns an array of article objects where each object has all the correct properties", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          const articleArr = body.results;
-          articleArr.forEach((article) => {
-            const keys = Object.keys(article);
-            expect(keys).toHaveLength(9);
-            expect(article).toMatchObject({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(String),
-            });
+});
+describe("app/articles", () => {
+  test("200: returns an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.results).toBeInstanceOf(Array);
+      });
+  });
+  test("200: returns an array of article objects where each object has all the correct properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articleArr = body.results;
+        articleArr.forEach((article) => {
+          const keys = Object.keys(article);
+          expect(keys).toHaveLength(9);
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
           });
         });
-    });
-    test("200: the array of objects are ordered by date created decending", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.results).toBeSortedBy("created_at", { descending: true });
-        });
-    });
+      });
+  });
+  test("200: the array of objects are ordered by date created decending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.results).toBeSortedBy("created_at", { descending: true });
+      });
   });
   describe("/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {
@@ -85,6 +85,22 @@ describe("app/topics", () => {
           const article = body.article[0];
           expect(body.article).toHaveLength(1);
           expect(article.article_id).toBe(3);
+        });
+    });
+    test("404: returns a error and message when passed a valid but non-exisitant id", () => {
+      return request(app)
+        .get("/api/articles/100")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("ID not found");
+        });
+    });
+    test("400: returns error and message when passed an invalid id type", () => {
+      return request(app)
+        .get("/api/articles/abc")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
         });
     });
   });
