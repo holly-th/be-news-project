@@ -143,5 +143,14 @@ describe("app/articles", () => {
           expect(body.message).toBe("Bad Request");
         });
     });
+    test("200: the comments are presented with the most recent comment first", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const comments = body.comments;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+        });
+    });
   });
 });
