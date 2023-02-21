@@ -27,3 +27,16 @@ exports.fetchArticleById = (article_id) => {
       }
     });
 };
+
+exports.fetchComments = (article_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comments.article_id = $1`, [
+      article_id,
+    ])
+    .then((results) => {
+      if (results.rowCount === 0) {
+        return Promise.reject("ID not found");
+      }
+      return results.rows;
+    });
+};
