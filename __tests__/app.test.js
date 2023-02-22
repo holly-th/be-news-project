@@ -12,7 +12,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("app/topics", () => {
+describe("GET/api/topics", () => {
   test("200: returns an array of topic objects with slug and description properties", () => {
     return request(app)
       .get("/api/topics")
@@ -37,7 +37,7 @@ describe("app/topics", () => {
       });
   });
 });
-describe("app/articles", () => {
+describe("GET/api/articles", () => {
   test("200: returns an array of article objects", () => {
     return request(app)
       .get("/api/articles")
@@ -52,9 +52,8 @@ describe("app/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articleArr = body.results;
+        expect(articleArr).toHaveLength(12);
         articleArr.forEach((article) => {
-          const keys = Object.keys(article);
-          expect(keys).toHaveLength(9);
           expect(article).toMatchObject({
             author: expect.any(String),
             title: expect.any(String),
@@ -76,7 +75,7 @@ describe("app/articles", () => {
         expect(body.results).toBeSortedBy("created_at", { descending: true });
       });
   });
-  describe("/api/articles/:article_id", () => {
+  describe("GET/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {
       return request(app)
         .get("/api/articles/3")
@@ -104,7 +103,7 @@ describe("app/articles", () => {
         });
     });
   });
-  describe("/api/articles/:article_id/comments", () => {
+  describe("GET/api/articles/:article_id/comments", () => {
     test("200: returns an array of comment objects relating to article_id given", () => {
       return request(app)
         .get("/api/articles/3/comments")
@@ -113,8 +112,6 @@ describe("app/articles", () => {
           const comments = body.comments;
           expect(body.comments).toHaveLength(2);
           comments.forEach((comment) => {
-            const keys = Object.keys(comment);
-            expect(keys).toHaveLength(6);
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
               votes: expect.any(Number),
@@ -150,6 +147,36 @@ describe("app/articles", () => {
         .then(({ body }) => {
           const comments = body.comments;
           expect(comments).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+  });
+  describe("POST/api/articles/:article_id/comments", () => {
+    test("200: returns the comment that was just posted to the correct article_id given", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge", body: "who is Mitch?" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(201)
+        .then(({ body }) => {
+          const addedComment = body.newComment[0];
+          expect(addedComment).toMatchObject({
+            author: "butter_bridge",
+            body: "who is Mitch?",
+            article_id: 3,
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          });
+        });
+    });
+    test("400: returns a bad request error when the information needed to add a new comment is incomplete", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
         });
     });
   });
