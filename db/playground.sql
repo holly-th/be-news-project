@@ -1,2 +1,2 @@
 \c nc_news_test
-SELECT * FROM comments WHERE comments.article_id = 5 ORDER BY comments.created_at DESC
+INSERT INTO comments ( author, body, article_id) VALUES('butter_bridge', 'who is Mich?', 3) RETURNING * ;
