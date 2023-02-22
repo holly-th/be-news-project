@@ -1,4 +1,5 @@
 const db = require("../connection");
+const comments = require("../data/test-data/comments");
 
 exports.fetchTopics = () => {
   return db.query(`SELECT * FROM topics`).then((results) => {
@@ -28,19 +29,6 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.addComment = (comment, article_id) => {
-  const { username, body } = comment;
-  return db
-    .query(
-      `INSERT INTO comments (username, body, article_id) VALUES ($1, $2, $3) RETURNING *`[
-        (comment, article_id)
-      ]
-    )
-    .then((results) => {
-      console.log(results.rows);
-    });
-};
-
 exports.fetchComments = (article_id) => {
   return db
     .query(
@@ -53,4 +41,20 @@ exports.fetchComments = (article_id) => {
       }
       return results.rows;
     });
+};
+
+exports.addComment = (comment, article_id) => {
+  const { username, body } = comment;
+  if (!username || !body) {
+    return Promise.reject("Bad Request");
+  } else {
+    return db
+      .query(
+        `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
+        [username, body, article_id]
+      )
+      .then((results) => {
+        return results.rows;
+      });
+  }
 };

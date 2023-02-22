@@ -1,5 +1,5 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err === "Bad Request") {
     res.status(400).send({ message: "Bad Request" });
   } else {
     next(err);
@@ -8,7 +8,7 @@ exports.handlePSQLErrors = (err, req, res, next) => {
 
 exports.handleCustomErrors = (err, req, res, next) => {
   if (err === "ID not found") {
-    res.status(404).send({ message: "Invalid ID" });
+    res.status(404).send({ message: "ID not found" });
   } else {
     next(err);
   }
