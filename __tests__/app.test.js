@@ -91,7 +91,7 @@ describe("GET/api/articles", () => {
         .get("/api/articles/100")
         .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("ID not found");
+          expect(body.message).toBe("Not found");
         });
     });
     test("400: returns error and message when passed an invalid id type", () => {
@@ -129,7 +129,7 @@ describe("GET/api/articles", () => {
         .get("/api/articles/300/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("ID not found");
+          expect(body.message).toBe("Not found");
         });
     });
     test("400: returns error and message when passed an invalid id ", () => {
@@ -150,6 +150,86 @@ describe("GET/api/articles", () => {
         });
     });
   });
+
+  describe("POST/api/articles/:article_id/comments", () => {
+    test("201: returns the comment that was just posted to the correct article_id given", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge", body: "who is Mitch?" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(201)
+        .then(({ body }) => {
+          const addedComment = body.newComment[0];
+          expect(addedComment).toMatchObject({
+            author: "butter_bridge",
+            body: "who is Mitch?",
+            article_id: 3,
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          });
+        });
+    });
+    test("201: tests that when adding a new comment the function will ignore any extra properties it doesn't need", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge", body: "who is Mitch?", votes: 11 })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(201)
+        .then(({ body }) => {
+          const addedComment = body.newComment[0];
+          expect(addedComment).toMatchObject({
+            author: "butter_bridge",
+            body: "who is Mitch?",
+            article_id: 3,
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          });
+        });
+    });
+    test("400: returns a bad request error when the information needed to add a new comment is incomplete", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "butter_bridge" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
+    test("400: returns a bad request error when passed an invalid article_id type", () => {
+      return request(app)
+        .post("/api/articles/abc/comments")
+        .send({ username: "butter_bridge", body: "who is mitch?" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
+    test("404: returns an Not found error when passed a valid but non-existant article_id", () => {
+      return request(app)
+        .post("/api/articles/10000/comments")
+        .send({ username: "butter_bridge", body: "who is mitch?" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("404: returns Not found error when passed a username that doesn't exisit in the database aka non-existant", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "holl", body: "who is mitch?" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+  });
+
   describe("PATCH/api/articles/article_id", () => {
     // test("200: returns updated article using the correct article_id", () => {
     //   return request(app)
@@ -170,35 +250,5 @@ describe("GET/api/articles", () => {
     //       });
     //     });
     // });
-    describe("POST/api/articles/:article_id/comments", () => {
-      test("200: returns the comment that was just posted to the correct article_id given", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({ username: "butter_bridge", body: "who is Mitch?" })
-          .expect("Content-Type", "application/json; charset=utf-8")
-          .expect(201)
-          .then(({ body }) => {
-            const addedComment = body.newComment[0];
-            expect(addedComment).toMatchObject({
-              author: "butter_bridge",
-              body: "who is Mitch?",
-              article_id: 3,
-              comment_id: expect.any(Number),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-            });
-          });
-      });
-      test("400: returns a bad request error when the information needed to add a new comment is incomplete", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({ username: "butter_bridge" })
-          .expect("Content-Type", "application/json; charset=utf-8")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.message).toBe("Bad Request");
-          });
-      });
-    });
   });
 });

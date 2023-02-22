@@ -7,8 +7,8 @@ exports.handlePSQLErrors = (err, req, res, next) => {
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {
-  if (err === "ID not found") {
-    res.status(404).send({ message: "ID not found" });
+  if (err === "Not found" || err.code === "23503") {
+    res.status(404).send({ message: "Not found" });
   } else {
     next(err);
   }
