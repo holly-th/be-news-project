@@ -153,4 +153,25 @@ describe("app/articles", () => {
         });
     });
   });
+  describe("PATCH/api/articles/article_id", () => {
+    // test("200: returns updated article using the correct article_id", () => {
+    //   return request(app)
+    //     .patch("/api/articles/3")
+    //     .send({ inc_votes: newVote })
+    //     .expect(200)
+    //     .then(({ body }) => {
+    //       console.log(body);
+    //       expect(body).toMatchObject({
+    //         author: expect.any(String),
+    //         title: expect.any(String),
+    //         article_id: expect.any(Number),
+    //         topic: expect.any(String),
+    //         created_at: expect.any(String),
+    //         votes: expect.any(Number),
+    //         article_img_url: expect.any(String),
+    //         comment_count: expect.any(String),
+    //       });
+    //     });
+    // });
+  });
 });

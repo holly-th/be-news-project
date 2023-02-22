@@ -36,6 +36,8 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 };
 
+exports.patchArticle = () => {};
+
 exports.getComments = (req, res, next) => {
   const article_id = req.params.article_id;
   fetchComments(article_id)
