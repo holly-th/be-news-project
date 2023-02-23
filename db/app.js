@@ -7,6 +7,7 @@ const {
   getComments,
   postComment,
   patchArticle,
+  getUsers,
 } = require("../db/controllers/app.controller");
 const {
   handlePSQLErrors,
@@ -28,6 +29,7 @@ app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
 
+app.get("/api/users", getUsers);
 app.use(handlePSQLErrors, handleCustomErrors, serverError);
 
 module.exports = app;
