@@ -5,19 +5,10 @@ const {
   fetchComments,
   addComment,
   changeVote,
+  fetchUsers,
 } = require("../models/app.model");
 exports.getTopics = (req, res, next) => {
   fetchTopics()
-    .then((results) => {
-      res.status(200).send(results);
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
-
-exports.getArticles = (req, res, next) => {
-  fetchArticles()
     .then((results) => {
       res.status(200).send({ results });
     })
@@ -25,8 +16,10 @@ exports.getArticles = (req, res, next) => {
       next(err);
     });
 };
-exports.getTopics = (req, res, next) => {
-  fetchTopics()
+
+exports.getArticles = (req, res, next) => {
+  const queries = req.query;
+  fetchArticles(queries)
     .then((results) => {
       res.status(200).send({ results });
     })
@@ -74,6 +67,16 @@ exports.patchArticle = (req, res, next) => {
   changeVote(change, article_id)
     .then((changedArticle) => {
       res.status(200).send({ changedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);
