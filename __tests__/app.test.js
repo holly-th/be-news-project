@@ -231,11 +231,11 @@ describe("GET/api/articles", () => {
   });
 
   describe("PATCH/api/articles/:article_id", () => {
-    test("201: returns updated article using the correct article_id", () => {
+    test("200: returns updated article using the correct article_id", () => {
       return request(app)
         .patch("/api/articles/3")
         .send({ inc_votes: 5 })
-        .expect(201)
+        .expect(200)
         .then(({ body }) => {
           const updatedArticle = body.changedArticle[0];
           expect(updatedArticle).toMatchObject({
