@@ -5,6 +5,7 @@ const {
   fetchComments,
   addComment,
   changeVote,
+  fetchUsers,
 } = require("../models/app.model");
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -74,6 +75,16 @@ exports.patchArticle = (req, res, next) => {
   changeVote(change, article_id)
     .then((changedArticle) => {
       res.status(200).send({ changedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);
