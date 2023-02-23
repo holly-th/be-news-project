@@ -22,7 +22,7 @@ exports.fetchArticleById = (article_id) => {
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then((result) => {
       if (result.rowCount === 0) {
-        return Promise.reject("ID not found");
+        return Promise.reject("Not found");
       } else {
         return result.rows;
       }
@@ -37,7 +37,7 @@ exports.fetchComments = (article_id) => {
     )
     .then((results) => {
       if (results.rowCount === 0) {
-        return Promise.reject("ID not found");
+        return Promise.reject("Not found");
       }
       return results.rows;
     });
@@ -54,6 +54,25 @@ exports.addComment = (comment, article_id) => {
         [username, body, article_id]
       )
       .then((results) => {
+        return results.rows;
+      });
+  }
+};
+
+exports.changeVote = (change, article_id) => {
+  const changeVoteBy = change.inc_votes;
+  if (!change || !article_id) {
+    return Promise.reject("Bad Request");
+  } else {
+    return db
+      .query(
+        `UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *`,
+        [changeVoteBy, article_id]
+      )
+      .then((results) => {
+        if (results.rowCount === 0) {
+          return Promise.reject("Not found");
+        }
         return results.rows;
       });
   }
