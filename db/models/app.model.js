@@ -58,3 +58,22 @@ exports.addComment = (comment, article_id) => {
       });
   }
 };
+
+exports.changeVote = (change, article_id) => {
+  const changeVoteBy = change.inc_votes;
+  if (!change || !article_id) {
+    return Promise.reject("Bad Request");
+  } else {
+    return db
+      .query(
+        `UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *`,
+        [changeVoteBy, article_id]
+      )
+      .then((results) => {
+        if (results.rowCount === 0) {
+          return Promise.reject("Not found");
+        }
+        return results.rows;
+      });
+  }
+};

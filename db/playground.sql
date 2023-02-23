@@ -1,2 +1,2 @@
 \c nc_news_test
-INSERT INTO comments ( author, body, article_id) VALUES('butter_bridge', 'who is Mich?', 3) RETURNING * ;
+UPDATE articles SET votes = votes $1 WHERE articles.article_id = $2 RETURNING *

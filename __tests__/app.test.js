@@ -230,25 +230,60 @@ describe("GET/api/articles", () => {
     });
   });
 
-  describe("PATCH/api/articles/article_id", () => {
-    // test("200: returns updated article using the correct article_id", () => {
-    //   return request(app)
-    //     .patch("/api/articles/3")
-    //     .send({ inc_votes: newVote })
-    //     .expect(200)
-    //     .then(({ body }) => {
-    //       console.log(body);
-    //       expect(body).toMatchObject({
-    //         author: expect.any(String),
-    //         title: expect.any(String),
-    //         article_id: expect.any(Number),
-    //         topic: expect.any(String),
-    //         created_at: expect.any(String),
-    //         votes: expect.any(Number),
-    //         article_img_url: expect.any(String),
-    //         comment_count: expect.any(String),
-    //       });
-    //     });
-    // });
+  describe("PATCH/api/articles/:article_id", () => {
+    test("201: returns updated article using the correct article_id", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({ inc_votes: 5 })
+        .expect(201)
+        .then(({ body }) => {
+          const updatedArticle = body.changedArticle[0];
+          expect(updatedArticle).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: 3,
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 5,
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test("400: returns a bad request error if the necessary data is not provided ", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
+    test("404: returns a not found error wheen passed an valid but non- existant article_id", () => {
+      return request(app)
+        .patch("/api/articles/100")
+        .send({ inc_votes: 5 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("400: returns bad request when passed an article_id of the wrong datatype", () => {
+      return request(app)
+        .patch("/api/articles/abc")
+        .send({ inc_votes: 5 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
+    test("400: returns a bad request error when passed an increase count value of wrong datatype", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({ inc_votes: "hello" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
   });
 });
