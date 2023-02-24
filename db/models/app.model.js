@@ -29,11 +29,9 @@ exports.fetchArticles = (topic, orderby = "desc", sortby = "created_at") => {
   queryStr += `GROUP BY articles.article_id ORDER BY ${sortby} ${orderby} `;
 
   return db.query(queryStr, topicArray).then((results) => {
-    console.log(results.rows);
     if (results.rowCount === 0) {
       return Promise.reject("Not found");
     } else {
-      console.log(results.rows);
       return results.rows;
     }
   });
