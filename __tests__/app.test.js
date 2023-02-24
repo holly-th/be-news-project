@@ -103,6 +103,15 @@ describe("GET/api/articles", () => {
           expect(body.message).toBe("Not found");
         });
     });
+    test("200: returns the articles sorted by the spcified column", () => {
+      return request(app)
+        .get("/api/articles?sortby=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.results).toBeInstanceOf(Object);
+          expect(body.results).toBeSortedBy("author", { descending: true });
+        });
+    });
   });
   describe("GET/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {

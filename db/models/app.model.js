@@ -1,5 +1,4 @@
 const db = require("../connection");
-const comments = require("../data/test-data/comments");
 
 exports.fetchTopics = () => {
   return db.query(`SELECT * FROM topics`).then((results) => {
@@ -7,19 +6,34 @@ exports.fetchTopics = () => {
   });
 };
 
-exports.fetchArticles = (queries) => {
-  const queryValues = [];
+exports.fetchArticles = (topic, orderby = "desc", sortby = "created_at") => {
+  let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id `;
+  const topicArray = [];
 
-  let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC;`;
-
-  if (queries.topic) {
-    queryValues.push(queries.topic);
-    queryStr = ` SELECT articles.*,COUNT(comments.article_id) AS comment_count FROM articles  LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.topic = $1 GROUP BY articles.article_id ORDER BY created_at DESC;`;
+  const validOrders = ["desc", "asc"];
+  const validSortby = [
+    "author",
+    "topic",
+    "created_at",
+    "votes",
+    "title",
+    "article_id",
+  ];
+  if (!validSortby.includes(sortby) || !validOrders.includes(orderby)) {
+    return Promise.reject("Bad request");
   }
-  return db.query(queryStr, queryValues).then((results) => {
+
+  if (topic) {
+    topicArray.push(topic);
+    queryStr += ` WHERE articles.topic = $1 `;
+  }
+  queryStr += `GROUP BY articles.article_id ORDER BY ${sortby} ${orderby} `;
+
+  return db.query(queryStr, topicArray).then((results) => {
     if (results.rowCount === 0) {
       return Promise.reject("Not found");
     } else {
+      console.log(results.rows);
       return results.rows;
     }
   });
