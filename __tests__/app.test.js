@@ -95,6 +95,14 @@ describe("GET/api/articles", () => {
           });
         });
     });
+    test("404: returns a not found error when passed a topic that doesn't exist in the articles table", () => {
+      return request(app)
+        .get("/api/articles?topic=dogs")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
   });
   describe("GET/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {
