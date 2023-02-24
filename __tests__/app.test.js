@@ -112,6 +112,39 @@ describe("GET/api/articles", () => {
           expect(body.results).toBeSortedBy("author", { descending: true });
         });
     });
+    test("200: returns correct articles when passed an orderby query", () => {
+      return request(app)
+        .get("/api/articles?orderby=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.results).toBeInstanceOf(Object);
+          expect(body.results).toBeSortedBy("created_at", { ascending: true });
+        });
+    });
+    // test("200: returns an empty array when passed a vaild topic query that doesn't hold any articles", () => {
+    //   return request(app)
+    //     .get("/api/articles?topic=paper")
+    //     .expect(200)
+    //     .then(({ body }) => {
+    //       expect(body.results).toEqual([]);
+    //     });
+    // });
+    test("400: returns bad request error when passed invalid sortby", () => {
+      return request(app)
+        .get("/api/articles?sortby=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
+    test("400: returns bad request error when passed invalid orderby", () => {
+      return request(app)
+        .get("/api/articles?orderby=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad Request");
+        });
+    });
   });
   describe("GET/api/articles/:article_id", () => {
     test("200: returns an object with the correct article matching the id passed in", () => {

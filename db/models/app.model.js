@@ -9,7 +9,6 @@ exports.fetchTopics = () => {
 exports.fetchArticles = (topic, orderby = "desc", sortby = "created_at") => {
   let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id `;
   const topicArray = [];
-
   const validOrders = ["desc", "asc"];
   const validSortby = [
     "author",
@@ -20,7 +19,7 @@ exports.fetchArticles = (topic, orderby = "desc", sortby = "created_at") => {
     "article_id",
   ];
   if (!validSortby.includes(sortby) || !validOrders.includes(orderby)) {
-    return Promise.reject("Bad request");
+    return Promise.reject("Bad Request");
   }
 
   if (topic) {
@@ -30,6 +29,7 @@ exports.fetchArticles = (topic, orderby = "desc", sortby = "created_at") => {
   queryStr += `GROUP BY articles.article_id ORDER BY ${sortby} ${orderby} `;
 
   return db.query(queryStr, topicArray).then((results) => {
+    console.log(results.rows);
     if (results.rowCount === 0) {
       return Promise.reject("Not found");
     } else {
