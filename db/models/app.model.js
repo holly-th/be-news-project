@@ -99,3 +99,9 @@ exports.changeVote = (change, article_id) => {
       });
   }
 };
+
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((results) => {
+    return results.rows;
+  });
+};
