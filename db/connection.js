@@ -4,10 +4,11 @@ const ENV = process.env.NODE_ENV || "development";
 require("dotenv").config({
   path: `${__dirname}/../.env.${ENV}`,
 });
+
 const config =
   ENV === "production"
     ? {
-        connectionStr: process.env.DATABASE_URL,
+        connectionString: process.env.DATABASE_URL,
         max: 2,
       }
     : {};
