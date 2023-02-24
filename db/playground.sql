@@ -1,2 +1,4 @@
 \c nc_news_test
-UPDATE articles SET votes = votes $1 WHERE articles.article_id = $2 RETURNING *
+--SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC ORDER BY articles.author;
+
+SELECT * FROM articles WHERE topic = 'paper';
