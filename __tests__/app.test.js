@@ -303,6 +303,7 @@ describe("GET/api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const users = body.users;
+        expect(users).toHaveLength(4);
         users.forEach((user) => {
           expect(user).toBeInstanceOf(Object);
           expect(user).toMatchObject({
